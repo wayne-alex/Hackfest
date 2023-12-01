@@ -44,7 +44,7 @@
                 <!-- Modal -->
                 <div class="modal fade" id="addMachinery" data-bs-backdrop="static" data-bs-keyboard="false"
                      tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Add Machine</h1>
@@ -52,15 +52,16 @@
                                         aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form class="row g-3" >
+                                <form class="row g-3" onsubmit="postData(event)" >
+                               
                                     <div class="col-md-6">
                                         <label class="form-label">Name</label>
-                                        <input type="text" class="form-control" id="name">
+                                        <input type="text" class="form-control" id="name" name="name" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Type</label>
-                                        <input class="form-control" list="datalistOptions" id="exampleDataList"
-                                               placeholder="Type to search..." name="type">
+                                        <input class="form-control" list="datalistOptions" id="type"
+                                               placeholder="Type to search..." name="type" required>
                                         <datalist id="datalistOptions">
                                             <option value="Tractor">
                                             <option value="Harvester">
@@ -72,28 +73,29 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Location</label>
-                                        <input type="text" class="form-control" id="Location" name="location">
+                                        <input type="text" class="form-control" id="location" name="location" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Rental Rates</label>
-                                        <input type="text" class="form-control" id="inputAddress2" placeholder="eg 1000"
-                                               name="rates">
+                                        <input type="text" class="form-control" id="rates" 
+                                               name="rates" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label">Condition</label>
                                         <select class="form-select" aria-label="Default select example"
-                                                name="condition">
+                                                name="condition" id="condition">
                                             <option value="used">Used</option>
                                             <option value="new">New</option>
+                                            required
 
                                         </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="formFile" class="form-label">Upload Image</label>
-                                        <input class="form-control" type="file" id="formFile">
+                                        <input class="form-control" type="file" id="image" required>
                                     </div>
                                     <div class="col-12">
-                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Add</button>
+                                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" >Add</button>
                                     </div>
                                 </form>
 
@@ -117,6 +119,27 @@
                 </div>
             </div>
 
+            
+    <div class="row">
+        {% for machine in machinery %}
+            <div class="col-md-4 stretch-card grid-margin">
+                <div class="card machinery-card" style="width: 18rem;">
+                    <img src="{% static 'assets/tractor1.jpeg' %}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ machine.name }}</h5>
+                        <p class="card-text">
+                            <strong>Type:</strong> {{ machine.type }}<br>
+                            <strong>Condition:</strong> {{ machine.condition }}<br>
+                            <strong>Location:</strong> {{ machine.location }}<br>
+                            <strong>Rental Rates:</strong> {{ machine.rental_rates }}<br>
+                        </p>
+                        <a href="#" class="btn btn-primary">Borrow</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
 
             <!-- content-wrapper ends -->
             <!-- partial:partials/_footer.html -->
@@ -130,24 +153,115 @@
     </div>
 </div>
 <script>
-    function getDataFromForm() {
-  const name = document.getElementById('name').value;
-  const type = document.getElementById('exampleDataList').value;
-  const location = document.getElementById('Location').value;
-  const rates = document.getElementById('inputAddress2').value;
-  const condition = document.querySelector('[name="condition"]').value;
-  const fileInput = document.getElementById('formFile');
-  const imageFile = fileInput.files[0];
+    
 
-  // You can now use these variables as needed, for example, log them to the console
-  console.log('Name:', name);
-  console.log('Type:', type);
-  console.log('Location:', location);
-  console.log('Rental Rates:', rates);
-  console.log('Condition:', condition);
-  console.log('Image File:', imageFile);
-}
+    async function postData(event) {
+        event.preventDefault(); // Prevent the form from submitting
 
+        // Retrieve data from the form
+        const name = document.getElementById('name').value;
+        const type = document.getElementById('type').value;
+        const location = document.getElementById('location').value;
+        const rates = document.getElementById('rates').value;
+        const condition = document.getElementById('condition').value;
+        const image = document.getElementById('image').value;
+
+        // Create an object with the data
+        const equipmentData = {
+            name: name,
+            type: type,
+            location: location,
+            rental_rates: rates,
+            condition: condition,
+            image: image
+        };
+        console.log(equipmentData)
+        try {
+            // Make an asynchronous POST request to the Django API
+            const response = await fetch('http://martomwenda.pythonanywhere.com/addMachine', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(equipmentData)
+            });
+
+            // Check if the request was successful (status code 2xx)
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result);
+            } else {
+                // If there was an error, log the error message
+                const errorResult = await response.json();
+                console.error(errorResult);
+            }
+
+        } catch (error) {
+            // Log any unexpected errors
+            console.error(error);
+        }
+    }
+
+    async function viewAllMachines() {
+        try {
+            // Make an asynchronous POST request to the Flask API
+            const response = await fetch('http://martomwenda.pythonanywhere.com/viewAllMachines', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+             
+            });
+
+            // Check if the request was successful (status code 2xx)
+            if (response.ok) {
+                const result = await response.json();
+                const machineryContainer = document.getElementById('machineryContainer');
+
+                // Clear previous content
+                machineryContainer.innerHTML = '';
+
+                // Display machinery data
+                result.machinery.forEach((machine) => {
+                    const machineCard = document.createElement('div');
+                    machineCard.className = 'card machinery-card';
+
+                    // Add image section (if image data is available)
+                    if (machine.image) {
+                        const imageDiv = document.createElement('div');
+                        imageDiv.className = 'card-img-top';
+                        imageDiv.style.backgroundImage = `url(${machine.image})`;
+                        machineCard.appendChild(imageDiv);
+                    }
+
+                    // Add card body
+                    const cardBody = document.createElement('div');
+                    cardBody.className = 'card-body';
+                    
+                    // Add machinery details
+                    const machineryDetails = document.createElement('pre');
+                    machineryDetails.textContent = JSON.stringify(machine, null, 2);
+                    cardBody.appendChild(machineryDetails);
+
+                    machineCard.appendChild(cardBody);
+
+                    machineryContainer.appendChild(machineCard);
+                });
+            } else {
+                // If there was an error, log the error message
+                const errorResult = await response.json();
+                console.error(errorResult);
+            }
+
+        } catch (error) {
+            // Log any unexpected errors
+            console.error(error);
+        }
+    }
+
+    // Fetch machinery data initially
+    viewAllMachines();
+    setInterval(viewAllMachines, 5000);
 </script>
 {% endblock %}
 
