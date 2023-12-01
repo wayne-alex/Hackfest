@@ -4,7 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Lend Kenya</title>
+    <title>Lease Kenya</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{% static 'Login/stylesheets/assets/vendors/mdi/css/materialdesignicons.min.css' %}">
     <link rel="stylesheet" href="{% static 'Login/stylesheets/assets/vendors/css/vendor.bundle.base.css' %}">
@@ -28,9 +28,7 @@
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
         <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-            <a class="navbar-brand brand-logo" href="{% url 'home'%}"><img src="{% static 'Login/images/Logo.png' %}"
-                                                                           alt="Image"
-                                                                           style="width: 50px; height: 50px;"/></a>
+            <a class="navbar-brand brand-logo" href="{% url 'home'%}"><img src="{% static 'assets/img/logo.jpg' %}" style="border-radius: 50%; height: 70px;width: 70px;;" alt="Logo">
             <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{% static 'Login/images/Logo.png' %}"
                                                                            alt="Image"
                                                                            style="width: 50px; height: 50px;"/></a>
@@ -106,7 +104,7 @@
                             {% if notify.type == 'team' %}
                             <div class="preview-thumbnail">
                                 <div class="preview-icon bg-light">
-                                    <img src="{% static 'Login/images/Logo.png' %}"/>
+                                    <!-- <img src="{% static 'Login/images/Logo.png' %}"/> -->
                                 </div>
                             </div>
                             {% elif notify.type == 'event' %}
@@ -181,7 +179,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'loans' %}">
-                        <span class="menu-title">Lend</span>
+                        <span class="menu-title">Lease</span>
                         <i class="mdi mdi-currency-usd menu-icon"></i>
 
                     </a>
