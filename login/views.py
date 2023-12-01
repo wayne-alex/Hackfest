@@ -1,7 +1,7 @@
 import calendar
 from collections import defaultdict
 from datetime import datetime, timedelta
-
+from django.http import JsonResponse
 import requests
 from _decimal import Decimal
 from django.contrib import messages
@@ -165,6 +165,8 @@ def verify_phone_number(request):
 
     else:
         return render(request, 'mobile.html', {'verification_code_sent': False})
+    
+
 
 
 def verify_code(request):
@@ -556,3 +558,23 @@ def contribution(request):
         current_year = datetime.now().year
         _contribute = Contribution.objects.filter(contribution_month=current_month, contribution_year=current_year)
         return render(request, 'monthlycontibution.html', {'form': form, 'contribute': _contribute})
+
+
+def dashboard(request):
+    # Define the Flask API endpoint
+    flask_api_url = 'http://martomwenda.pythonanywhere.com/viewAllMachines'
+
+    try:
+        # Make a POST request to the Flask API
+        response = requests.post(flask_api_url, headers={'Content-Type': 'application/json'})
+
+        # Check if the request was successful (status code 2xx)
+        if response.ok:
+            machinery_data = response.json().get('machinery', [])
+            return render(request, 'dashboard.html', {'machinery': machinery_data})
+
+        # If there was an error, return an error response
+        return JsonResponse({'error': 'Failed to fetch machinery data'}, status=response.status_code)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
